@@ -9,19 +9,7 @@
       var ua = navigator.userAgent || '';
       var isKindle = /Kindle|Silk|kftt|SDIO|Jasmine/i.test(ua);
       if (isKindle) {
-        var m = document.querySelector('meta[name="viewport"]');
-        if (m) m.setAttribute('content', 'width=758, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no');
         try { document.documentElement.className += ' is-kindle'; } catch(e) {}
-        try {
-          document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, true);
-          document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, true);
-          document.addEventListener('gestureend', function(e){ e.preventDefault(); }, true);
-          document.addEventListener('dblclick', function(e){
-            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.className.indexOf('letter-box') !== -1)) {
-              e.preventDefault();
-            }
-          }, true);
-        } catch(e) {}
       }
       window.IS_KINDLE = isKindle;
     })();
@@ -40,19 +28,6 @@
       overflow: hidden;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
-    }
-    html.is-kindle body,
-    html.is-kindle {
-      -webkit-text-size-adjust: none !important;
-      text-size-adjust: none !important;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    html.is-kindle input {
-      -webkit-user-select: text;
-      user-select: text;
-      font-size: 16px !important;
     }
 
     /* ── Page Wrapper ── */
@@ -159,27 +134,34 @@
     }
     .practice-input-row {
       display: -webkit-box; display: -webkit-flex; display: flex;
-      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+      margin-bottom: 20px;
     }
-    .letter-box {
-      width: 60px; height: 72px; border: 2px solid #000; border-radius: 14px;
+    .hint-top-input {
+      width: 50%; font-size: 40px; text-align: center; padding: 14px 10px;
+      border: 2px solid #000; border-radius: 14px; font-family: inherit;
+      text-transform: lowercase; letter-spacing: 4px; margin-bottom: 24px;
+    }
+    .hint-skeleton {
       display: -webkit-box; display: -webkit-flex; display: flex;
-      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+      -webkit-box-align: end; -webkit-align-items: flex-end; align-items: flex-end;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      font-size: 42px; font-weight: bold; background: #fff; text-align: center;
-      font-family: inherit;
+      gap: 8px;
     }
-    .letter-box.given { background: #EDEDED; color: #666; }
-    .letter-box input {
-      width: 100%; height: 100%; border: none; outline: none; background: transparent;
-      font-size: 42px; font-weight: bold; text-align: center; font-family: inherit;
-      text-transform: lowercase;
+    .hint-skel-given {
+      font-size: 42px; font-weight: bold; color: #999; width: 40px; text-align: center;
     }
-    .letter-box.correct { background: #C8F7C8; border-color: #090; }
-    .letter-box.wrong { background: #FCC; border-color: #E33; }
+    .hint-skel-slot {
+      font-size: 42px; font-weight: bold; color: #000; width: 40px; text-align: center;
+      padding-bottom: 4px; border-bottom: 3px solid #CCC;
+    }
+    .hint-skel-slot.active { border-bottom-color: #000; }
+    .hint-skel-slot.filled { border-bottom-color: #000; color: #000; }
+    .hint-skeleton.correct .hint-skel-slot { color: #090; border-bottom-color: #090; }
+    .hint-skeleton.wrong .hint-skel-slot { color: #E33; border-bottom-color: #E33; }
     .practice-full-input {
       width: 100%;  margin: 0 auto 20px;
       font-size: 40px; text-align: center; padding: 16px;
@@ -972,24 +954,59 @@
       box.style.display = '';
       $('practice-full-input').style.display = 'none';
       var word = w.word.toLowerCase();
-      // 前2 + 最后1 + 中间空白
       var len = word.length;
-      if (len <= 3) {
-        // 太短，全是输入
-        for (var i = 0; i < len; i++) {
-          box.appendChild(makeInputBox(''));
-        }
-      } else {
-        // 前2 + 中间(len-3)个空 + 最后1
-        for (var a = 0; a < 2; a++) box.appendChild(makeGivenBox(word[a]));
-        for (var b = 0; b < len - 3; b++) box.appendChild(makeInputBox(''));
-        box.appendChild(makeGivenBox(word[len - 1]));
+      // 上：大输入框（50%宽）
+      var topInp = document.createElement('input');
+      topInp.type = 'text'; topInp.className = 'hint-top-input';
+      topInp.autocomplete = 'off'; topInp.spellcheck = false; topInp.maxLength = len;
+      box.appendChild(topInp);
+      // 下：提示骨架
+      var skel = document.createElement('div');
+      skel.className = 'hint-skeleton';
+      // 根据长度决定显示策略
+      var givenPrefix = len <= 3 ? 0 : 2;
+      var givenSuffix = len <= 3 ? 0 : 1;
+      var slotCount = len - givenPrefix - givenSuffix;
+      var slots = [];
+      for (var i = 0; i < givenPrefix; i++) {
+        var g = document.createElement('div'); g.className = 'hint-skel-given'; g.innerHTML = word[i];
+        skel.appendChild(g);
       }
-      // 自动聚焦第一个输入框
-      setTimeout(function() {
-        var firstInput = box.querySelector('input');
-        if (firstInput) firstInput.focus();
-      }, 50);
+      for (var j = 0; j < slotCount; j++) {
+        var s = document.createElement('div'); s.className = 'hint-skel-slot'; s.innerHTML = '';
+        skel.appendChild(s); slots.push(s);
+      }
+      if (givenSuffix > 0) {
+        var gg = document.createElement('div'); gg.className = 'hint-skel-given'; gg.innerHTML = word[len - 1];
+        skel.appendChild(gg);
+      }
+      box.appendChild(skel);
+      // 输入事件：根据当前值更新骨架状态
+      function syncSkeleton() {
+        var val = topInp.value.toLowerCase().replace(/[^a-z]/g, '');
+        // 清除旧状态
+        for (var k = 0; k < slots.length; k++) {
+          slots[k].className = 'hint-skel-slot';
+          slots[k].innerHTML = '';
+        }
+        // 填充已输入的
+        for (var k2 = 0; k2 < val.length && k2 < slots.length; k2++) {
+          slots[k2].innerHTML = val[k2];
+          slots[k2].className = 'hint-skel-slot filled';
+        }
+        // 当前光标位置下划线
+        if (val.length < slots.length) {
+          slots[val.length].className = 'hint-skel-slot active';
+        }
+        updateSubmitEnabled();
+      }
+      topInp.oninput = syncSkeleton;
+      topInp.onkeypress = syncSkeleton;
+      topInp.onkeydown = function(e) {
+        if (e.keyCode === 13) { e.preventDefault(); submitAnswer(); }
+      };
+      topInp.onpaste = function() { setTimeout(syncSkeleton, 0); };
+      setTimeout(function() { topInp.focus(); syncSkeleton(); }, 50);
     }
     function renderFullInput(w) {
       $('practice-hint-input').innerHTML = '';
@@ -997,70 +1014,18 @@
       var inp = $('practice-full-input');
       inp.style.display = '';
       inp.value = '';
-      inp.focus();
-    }
-    function focusNextLetter(wrap) {
-      var nxt = wrap.nextElementSibling;
-      if (!nxt) return;
-      var nxtInp = nxt.querySelector ? nxt.querySelector('input') : null;
-      if (!nxtInp) return;
-      try {
-        nxtInp.focus();
-      } catch(e) {}
-      setTimeout(function() { try { nxtInp.focus(); } catch(e) {} }, 0);
-      setTimeout(function() { try { nxtInp.focus(); } catch(e) {} }, 30);
-    }
-    function focusPrevLetter(wrap) {
-      var prev = wrap.previousElementSibling;
-      if (!prev) return;
-      var pInp = prev.querySelector ? prev.querySelector('input') : null;
-      if (!pInp) return;
-      try { pInp.focus(); } catch(e) {}
-      setTimeout(function() { try { pInp.focus(); } catch(e) {} }, 0);
-    }
-    function makeGivenBox(ch) {
-      var el = document.createElement('div');
-      el.className = 'letter-box given';
-      el.innerHTML = ch;
-      return el;
-    }
-    function makeInputBox(val) {
-      var wrap = document.createElement('div');
-      wrap.className = 'letter-box';
-      var inp = document.createElement('input');
-      inp.type = 'text'; inp.maxLength = 1; inp.autocomplete = 'off'; inp.spellcheck = false;
-      inp.value = val || '';
-      function onCharInput() {
-        inp.value = inp.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
-        if (inp.value) focusNextLetter(wrap);
-        updateSubmitEnabled();
-      }
-      inp.oninput = onCharInput;
-      inp.onkeypress = onCharInput;
-      inp.onkeyup = onCharInput;
-      inp.onpaste = function(e) {
-        setTimeout(onCharInput, 0);
-      };
-      inp.onkeydown = function(e) {
-        if (e.keyCode === 8 && !inp.value) {
-          focusPrevLetter(wrap);
-        }
-        if (e.keyCode === 13) { submitAnswer(); }
-      };
-      wrap.appendChild(inp);
-      return wrap;
+      setTimeout(function() { try { inp.focus(); } catch(e) {} }, 50);
     }
     function updateSubmitEnabled() {
       var btn = $('btn-submit');
       if (CFG.hint) {
-        var allInp = $('practice-hint-input').querySelectorAll('.letter-box input');
-        for (var i = 0; i < allInp.length; i++) {
-          if (!allInp[i].value) { btn.className = 'practice-btn primary disabled'; return; }
-        }
-        btn.className = 'practice-btn primary';
-      } else {
-        var v = $('practice-full-input').value.trim();
+        var topInp = $('practice-hint-input').querySelector('.hint-top-input');
+        var v = topInp ? topInp.value.toLowerCase().replace(/[^a-z]/g, '') : '';
         if (v.length > 0) btn.className = 'practice-btn primary';
+        else btn.className = 'practice-btn primary disabled';
+      } else {
+        var v2 = $('practice-full-input').value.trim();
+        if (v2.length > 0) btn.className = 'practice-btn primary';
         else btn.className = 'practice-btn primary disabled';
       }
     }
@@ -1081,14 +1046,14 @@
       var word = w.word.toLowerCase();
       var ans;
       if (CFG.hint) {
-        var box = $('practice-hint-input');
-        var all = box.querySelectorAll('.letter-box');
-        ans = '';
-        for (var i = 0; i < all.length; i++) {
-          var inp = all[i].querySelector('input');
-          ans += inp ? (inp.value || '') : (all[i].innerHTML || '');
+        var topInp = $('practice-hint-input').querySelector('.hint-top-input');
+        var userFill = topInp ? topInp.value.toLowerCase().replace(/[^a-z]/g, '') : '';
+        var len = word.length;
+        if (len <= 3) {
+          ans = userFill;
+        } else {
+          ans = word.substr(0, 2) + userFill + word.charAt(len - 1);
         }
-        ans = ans.toLowerCase();
       } else {
         ans = $('practice-full-input').value.trim().toLowerCase();
       }
@@ -1139,17 +1104,13 @@
     }
 
     function showResultFeedback(correct, word) {
-      var el = CFG.hint ? $('practice-hint-input') : $('practice-full-input');
       if (CFG.hint) {
-        var boxes = el.querySelectorAll('.letter-box');
-        var target = correct ? correct : 'wrong';
-        for (var i = 0; i < boxes.length; i++) {
-          if (hasClass(boxes[i], 'given')) continue;
-          // 所有输入框标上颜色
-          if (correct) addClass(boxes[i], 'correct');
-          else addClass(boxes[i], 'wrong');
+        var skel = $('practice-hint-input').querySelector('.hint-skeleton');
+        if (skel) {
+          skel.className = 'hint-skeleton ' + (correct ? 'correct' : 'wrong');
+          var topInp = $('practice-hint-input').querySelector('.hint-top-input');
+          if (topInp) topInp.style.borderColor = correct ? '#090' : '#E33';
         }
-        // 显示正确答案
         if (!correct) {
           setTimeout(function() { alert('正确答案：' + word); }, 10);
         }
