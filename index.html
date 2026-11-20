@@ -580,6 +580,73 @@
       padding: 16px 32px; cursor: pointer;
     }
 
+    /* ── Settings Panel ──────────────────────────────────────── */
+    #settings-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff; z-index: 11000; overflow: hidden;
+      display: none;
+    }
+    .settings-panel {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+      padding: 40px 60px;
+    }
+    .settings-header {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      margin-bottom: 50px;
+    }
+    .settings-title {
+      font-size: 48px; font-weight: bold; color: #000;
+    }
+    .settings-close {
+      width: 56px; height: 56px; cursor: pointer;
+    }
+    .settings-row {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      padding: 30px 0;
+      border-bottom: 2px solid #000;
+    }
+    .settings-label {
+      font-size: 36px; color: #000;
+    }
+    .settings-input-wrap {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+    }
+    .settings-input {
+      width: 120px; height: 60px; font-size: 36px;
+      border: 3px solid #000; padding: 0 12px; text-align: center;
+      background: #fff; color: #000;
+      -webkit-appearance: none; appearance: none;
+    }
+    .settings-unit {
+      font-size: 28px; color: #000; margin-left: 16px;
+    }
+    .toggle-switch {
+      width: 140px; height: 70px; border: 4px solid #000;
+      background: #fff; cursor: pointer; position: relative;
+    }
+    .toggle-switch .toggle-knob {
+      position: absolute; top: 8px; left: 8px;
+      width: 46px; height: 46px; background: #000;
+      -webkit-transition: left 0.15s; transition: left 0.15s;
+    }
+    .toggle-switch.on {
+      background: #000;
+    }
+    .toggle-switch.on .toggle-knob {
+      left: 78px; background: #fff;
+    }
+    .settings-hint {
+      font-size: 24px; color: #555; margin-top: 20px;
+    }
+
     /* ── Onboarding ──────────────────────────────────────── */
     #ob-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -1063,6 +1130,37 @@
 
   </div><!-- #ob-overlay -->
 
+  <!-- Settings Overlay -->
+  <div id="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <div class="settings-title">设置</div>
+        <div class="settings-close" onclick="toggleSettings()">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 14L42 42M42 14L14 42" stroke="black" stroke-width="4.67" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-label">阻止Kindle休眠</div>
+        <div class="toggle-switch" id="ks-keepawake" onclick="toggleKeepAwake()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-label">刷新间隔</div>
+        <div class="settings-input-wrap">
+          <input type="number" class="settings-input" id="ks-interval" min="1" max="60" value="9" onchange="saveKeepAwakeInterval(this.value)" />
+          <div class="settings-unit">分钟</div>
+        </div>
+      </div>
+
+      <div class="settings-hint">开启阻止休眠后，页面每隔设定时间自动刷新一次，防止Kindle进入休眠</div>
+    </div>
+  </div>
+
   <div id="page-wrapper">
 
     <!-- Page 0: Clock -->
@@ -1453,11 +1551,7 @@
           </svg>
         </div>
 
-      </div>
-    </div>
-    <!-- Right card: news icon -->
-    <div class="nav-card nav-card-sm">
-      <div class="nav-icon" onclick="switchTab(4)">
+        <div class="nav-icon" onclick="switchTab(4)">
         <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_2397_685)">
             <path d="M5.5 8V43C5.5 45.7614 7.73858 48 10.5 48H40.5H45.5C48.2614 48 50.5 45.7614 50.5 43V18H40.5" stroke="black" stroke-width="4.67" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1466,6 +1560,16 @@
             <path d="M30.5 28L20.5 28" stroke="black" stroke-width="4.67" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
           <defs><clipPath id="clip0_2397_685"><rect width="56" height="56" fill="white"/></clipPath></defs>
+        </svg>
+      </div>
+
+      </div>
+    </div>
+    <!-- Right card: settings icon -->
+    <div class="nav-card nav-card-sm">
+      <div class="nav-icon" onclick="toggleSettings()">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.5.5 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58c-.2.14-.24.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" stroke="black" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
       </div>
     </div>
@@ -2601,6 +2705,102 @@
       setTimeout(applyAll, 500);
       setTimeout(applyAll, 1200);
     })();
+
+    /* ── Keep-Awake Settings ────────────────────────────────── */
+    (function() {
+      var KA_KEY_ON  = 'ks_keepawake';
+      var KA_KEY_INT = 'ks_interval';
+      var DEFAULT_INT = 9;
+      var kaTimer = null;
+
+      function readOn() {
+        try { return localStorage.getItem(KA_KEY_ON) === '1'; } catch(e) { return false; }
+      }
+      function writeOn(v) {
+        try { localStorage.setItem(KA_KEY_ON, v ? '1' : '0'); } catch(e) {}
+      }
+      function readInt() {
+        try {
+          var n = parseInt(localStorage.getItem(KA_KEY_INT), 10);
+          if (n >= 1 && n <= 60) return n;
+        } catch(e) {}
+        return DEFAULT_INT;
+      }
+      function writeInt(n) {
+        try { localStorage.setItem(KA_KEY_INT, String(n)); } catch(e) {}
+      }
+
+      function applyToggleUI() {
+        var el = document.getElementById('ks-keepawake');
+        if (!el) return;
+        if (readOn()) {
+          if (!/\bon\b/.test(el.className)) el.className = (el.className || '') + ' on';
+        } else {
+          el.className = (el.className || '').replace(/\bon\b/g, '').replace(/\s+$/, '');
+        }
+      }
+
+      function applyInputUI() {
+        var el = document.getElementById('ks-interval');
+        if (!el) return;
+        el.value = readInt();
+      }
+
+      function runKeepAwakeTick() {
+        try {
+          if (typeof forceEinkRefresh === 'function') {
+            forceEinkRefresh(function() {});
+          } else {
+            document.body.style.opacity = '0.99';
+            setTimeout(function() { document.body.style.opacity = '1'; }, 50);
+          }
+        } catch(e) {}
+      }
+
+      function startTimer() {
+        stopTimer();
+        var mins = readInt();
+        var ms = Math.max(30, mins) * 60 * 1000;
+        kaTimer = setInterval(runKeepAwakeTick, ms);
+      }
+      function stopTimer() {
+        if (kaTimer) { clearInterval(kaTimer); kaTimer = null; }
+      }
+
+      window.toggleSettings = function() {
+        var ov = document.getElementById('settings-overlay');
+        if (!ov) return;
+        var cur = ov.style.display;
+        if (cur === 'block') {
+          ov.style.display = 'none';
+        } else {
+          applyToggleUI();
+          applyInputUI();
+          ov.style.display = 'block';
+        }
+      };
+
+      window.toggleKeepAwake = function() {
+        var next = !readOn();
+        writeOn(next);
+        applyToggleUI();
+        if (next) startTimer(); else stopTimer();
+      };
+
+      window.saveKeepAwakeInterval = function(val) {
+        var n = parseInt(val, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > 60) n = 60;
+        writeInt(n);
+        var el = document.getElementById('ks-interval');
+        if (el) el.value = n;
+        if (readOn()) startTimer();
+      };
+
+      applyToggleUI();
+      if (readOn()) startTimer();
+    })();
+
   </script>
 </body>
 </html>
