@@ -130,7 +130,7 @@
       font-weight: bold;
     }
     .practice-phonetic {
-      font-size: 24px; text-align: center; color: #ababab; margin-bottom: 30px;
+      font-size: 24px; text-align: center; color: #ababab; 
     }
     .practice-input-row {
       width: 100%;
@@ -402,15 +402,15 @@
               <div id="practice-hint-input" class="practice-input-row"></div>
               <input id="practice-full-input" class="practice-full-input" type="text" placeholder="输入完整单词" autocomplete="off" spellcheck="false" style="display:none;" />
             </div>
+            <div class="practice-buttons">
+              <button class="practice-btn disabled" id="btn-submit" onclick="submitAnswer()">提交</button>
+              <button class="practice-btn" onclick="skipWord()">跳过</button>
+            </div>
             <div class="practice-hint-switch">
               <span>提示模式</span>
               <button class="toggle-switch" id="hint-switch" onclick="toggleHintMode()">
                 <span class="knob"></span>
               </button>
-            </div>
-            <div class="practice-buttons">
-              <button class="practice-btn disabled" id="btn-submit" onclick="submitAnswer()">提交</button>
-              <button class="practice-btn" onclick="skipWord()">跳过</button>
             </div>
           </div>
         </div>
