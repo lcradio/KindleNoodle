@@ -267,9 +267,19 @@
     .lib-picker-item.active { background: #000; color: #fff; }
     .lib-picker-item.disabled { color: #CCC; cursor: not-allowed; }
     .lib-picker-confirm {
-      padding: 20px 0 0; margin-top: 16px;
-      display: -webkit-box; display: -webkit-flex; display: flex;
-      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      padding: 20px 20px;
+      margin-top: 16px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      position: fixed;
+      background: #fff;
+      box-shadow: 0 0 10px #ccc;
+      width: 100%;
+      margin-left: -25px;
+      bottom: 3px;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
     }
     .lib-picker-confirm button {
       font-size: 24px; padding: 14px 80px; border-radius: 38px;
