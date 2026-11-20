@@ -1621,7 +1621,8 @@
 
     function fetchTimezone() {
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'http://ip-api.com/json?fields=offset,city,lat,lon', true);
+      var proto = (location.protocol === 'https:') ? 'https:' : 'http:';
+      xhr.open('GET', proto + '//ip-api.com/json?fields=offset,city,lat,lon', true);
       xhr.timeout = 5000;
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -1639,7 +1640,7 @@
     }
 
     updateClock();
-    fetchTimezone();
+    // fetchTimezone();
     setInterval(updateClock, 60000);
 
     /* ── Noodle Timer ───────────────────────────────────── */
@@ -1969,7 +1970,8 @@
 
     function fetchQuote() {
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://v1.hitokoto.cn/', true);
+      var proto = (location.protocol === 'https:') ? 'https:' : 'http:';
+      xhr.open('GET', proto + '//v1.hitokoto.cn/', true);
       xhr.timeout = 5000;
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
