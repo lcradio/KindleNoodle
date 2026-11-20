@@ -1,0 +1,1205 @@
+<!-- Kindle Noodle · 记单词 -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kindle Noodle · 单词</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-animation: none !important; animation: none !important;
+      -webkit-transition: none !important; transition: none !important;
+    }
+    html { height: 100%; overflow: hidden; }
+    body {
+      width: 758px; height: 100%; background: #fff;
+      font-family: Arial, Helvetica, sans-serif; color: #000;
+      overflow: hidden;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+    }
+
+    /* ── Page Wrapper ── */
+    #page-wrapper {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      min-height: 0; overflow: hidden;
+    }
+
+    /* ── Top Bar ── */
+    #top-bar {
+      height: 60px; padding: 0 16px;
+      border-bottom: 1px solid #DDD;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+    }
+    #top-bar .lib-info {
+      font-size: 22px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #top-bar .lib-info.small { font-size: 18px; }
+    #top-bar .btn-change-lib {
+      font-size: 16px; padding: 6px 14px;
+      border: 1px solid #000; background: #fff; border-radius: 8px;
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* ── Content ── */
+    #content {
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      min-height: 0; overflow-y: auto; overflow-x: hidden;
+      padding: 12px;
+    }
+    .content-page { display: none; height: 100%; }
+    .content-page.active { display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column; }
+
+    /* ── Bottom Nav ── */
+    #bottom-nav {
+      height: 72px; border-top: 1px solid #DDD; background: #fff;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+    }
+    .nav-item {
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      cursor: pointer; border-right: 1px solid #EEE;
+      font-family: inherit; background: #fff; color: #666;
+    }
+    .nav-item:last-child { border-right: none; }
+    .nav-item .nav-label { font-size: 14px; margin-top: 4px; }
+    .nav-item.active { color: #000; background: #F5F5F5; }
+    .nav-item .dot {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      background: #E33; top: 10px; right: calc(50% - 10px);
+    }
+
+    /* ── Practice Page ── */
+    .practice-card {
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      background: #fff; border-radius: 30px;
+      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
+      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
+      padding: 30px; overflow: hidden;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+    }
+    .practice-header {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      margin-bottom: 20px;
+    }
+    .practice-progress { font-size: 16px; color: #666; }
+    .practice-timer { font-size: 18px; color: #E33; font-weight: bold; }
+    .practice-timer.ok { color: #090; }
+    .practice-mode-tag {
+      font-size: 14px; padding: 2px 10px; border-radius: 10px;
+      border: 1px solid #000; display: inline-block; margin-left: 8px;
+    }
+    .practice-meaning {
+      font-size: 44px; text-align: center; margin: 30px 0 20px;
+      font-weight: bold;
+    }
+    .practice-phonetic {
+      font-size: 22px; text-align: center; color: #888; margin-bottom: 30px;
+    }
+    .practice-input-row {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 30px;
+    }
+    .letter-box {
+      width: 52px; height: 64px; border: 2px solid #000; border-radius: 8px;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      font-size: 36px; font-weight: bold; background: #fff; text-align: center;
+      font-family: inherit;
+    }
+    .letter-box.given { background: #EEE; color: #666; }
+    .letter-box input {
+      width: 100%; height: 100%; border: none; outline: none; background: transparent;
+      font-size: 36px; font-weight: bold; text-align: center; font-family: inherit;
+      text-transform: lowercase;
+    }
+    .letter-box.correct { background: #C8F7C8; border-color: #090; }
+    .letter-box.wrong { background: #FCC; border-color: #E33; }
+    .practice-full-input {
+      width: 100%; max-width: 600px; margin: 0 auto 30px;
+      font-size: 40px; text-align: center; padding: 16px;
+      border: 2px solid #000; border-radius: 12px; font-family: inherit;
+      text-transform: lowercase; letter-spacing: 4px;
+    }
+    .practice-buttons {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      gap: 16px;
+    }
+    .practice-btn {
+      font-size: 24px; padding: 14px 40px; border-radius: 12px;
+      border: 2px solid #000; background: #fff; cursor: pointer; font-family: inherit;
+    }
+    .practice-btn.primary { background: #000; color: #fff; }
+    .practice-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+    .practice-hint-switch {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      gap: 12px; margin-top: 10px; font-size: 18px;
+    }
+
+    /* ── Wordlist / Wronglist ── */
+    .wordlist-header {
+      font-size: 24px; font-weight: bold; padding: 8px 4px 16px;
+      border-bottom: 2px solid #000; margin-bottom: 12px;
+    }
+    .wordlist-item {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      padding: 14px 8px; border-bottom: 1px solid #EEE;
+    }
+    .wordlist-item .w-word { font-size: 24px; font-weight: bold; }
+    .wordlist-item .w-mean { font-size: 18px; color: #666; }
+    .wordlist-item .w-badge { font-size: 14px; padding: 2px 10px; border-radius: 10px;
+      border: 1px solid #E33; color: #E33; margin-left: 8px; display: inline-block; }
+    .wordlist-item .w-badge.muted { border-color: #AAA; color: #AAA; }
+    .wordlist-empty { text-align: center; color: #999; padding: 60px 0; font-size: 20px; }
+
+    /* ── Result Page ── */
+    .result-title { font-size: 30px; font-weight: bold; text-align: center; margin: 30px 0; }
+    .result-stats {
+      background: #fff; border-radius: 20px;
+      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
+      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
+      padding: 30px; margin-bottom: 20px;
+    }
+    .result-row {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      padding: 14px 0; font-size: 20px;
+    }
+    .result-row + .result-row { border-top: 1px solid #EEE; }
+    .result-row .label { color: #666; }
+    .result-row .val { font-weight: bold; }
+    .result-buttons {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      gap: 16px; margin-top: 20px;
+    }
+    .result-btn {
+      font-size: 20px; padding: 12px 30px; border-radius: 10px;
+      border: 2px solid #000; background: #fff; cursor: pointer; font-family: inherit;
+    }
+    .result-btn.primary { background: #000; color: #fff; }
+
+    /* ── Overlays ── */
+    .overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.97); z-index: 10000;
+      display: none;
+    }
+    .overlay.show { display: block; }
+    .overlay-panel {
+      width: 100%; height: 100%; padding: 20px;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+    }
+    .overlay-title {
+      font-size: 28px; font-weight: bold; padding: 10px 0 20px;
+      border-bottom: 2px solid #000; margin-bottom: 20px;
+    }
+    .overlay-close {
+      position: absolute; top: 16px; right: 20px;
+      font-size: 28px; border: none; background: none; cursor: pointer;
+    }
+    .overlay-body {
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; overflow-y: auto;
+    }
+
+    /* 单词库选择器 */
+    .lib-picker-cols {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
+      gap: 12px; height: 100%;
+    }
+    .lib-picker-col {
+      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      border: 1px solid #DDD; border-radius: 10px; padding: 8px; overflow-y: auto;
+    }
+    .lib-picker-col-title {
+      font-size: 16px; color: #888; padding: 8px 4px; border-bottom: 1px solid #EEE;
+    }
+    .lib-picker-item {
+      padding: 14px 10px; cursor: pointer; font-size: 20px;
+      border-radius: 6px; border-bottom: 1px solid #F0F0F0;
+    }
+    .lib-picker-item:hover { background: #F5F5F5; }
+    .lib-picker-item.active { background: #000; color: #fff; }
+    .lib-picker-item.disabled { color: #CCC; cursor: not-allowed; }
+    .lib-picker-confirm {
+      padding: 16px; border-top: 2px solid #000; margin-top: 16px;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+    }
+    .lib-picker-confirm button {
+      font-size: 22px; padding: 12px 60px; border-radius: 12px;
+      border: 2px solid #000; background: #000; color: #fff; cursor: pointer; font-family: inherit;
+    }
+    .lib-picker-confirm button:disabled { opacity: 0.3; }
+
+    /* 模式选择 */
+    .mode-list {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+      gap: 12px;
+    }
+    .mode-item {
+      padding: 22px 20px; border: 2px solid #DDD; border-radius: 14px;
+      cursor: pointer; font-family: inherit; background: #fff; text-align: left;
+    }
+    .mode-item:hover { border-color: #000; }
+    .mode-item-title { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
+    .mode-item-desc { font-size: 16px; color: #666; }
+    .mode-item.disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* 设置 */
+    .settings-row {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      padding: 18px 4px; border-bottom: 1px solid #EEE; font-size: 20px;
+    }
+    .toggle-switch {
+      width: 60px; height: 34px; border-radius: 17px;
+      background: #DDD; position: relative; cursor: pointer;
+      border: none; padding: 0;
+    }
+    .toggle-switch .knob {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #fff; position: absolute; top: 2px; left: 2px;
+    }
+    .toggle-switch.on { background: #000; }
+    .toggle-switch.on .knob { left: 28px; }
+    .settings-input {
+      font-size: 20px; padding: 8px 12px; border: 1px solid #000; border-radius: 6px;
+      width: 100px; text-align: center; font-family: inherit;
+    }
+
+    /* 加载遮罩 */
+    #loading-mask {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #fff; z-index: 20000;
+      display: none;
+      -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+      -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+      font-size: 22px; color: #666;
+    }
+    #loading-mask.show { display: -webkit-box; display: -webkit-flex; display: flex; }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center; color: #999; padding: 80px 20px;
+      font-size: 22px;
+    }
+
+    /* 返回首页链接 */
+    .back-home {
+      position: absolute; top: 12px; left: 12px; z-index: 50;
+      font-size: 16px; color: #666; text-decoration: none;
+    }
+    .back-home:hover { color: #000; }
+  </style>
+</head>
+<body>
+
+  <div id="page-wrapper">
+    <div id="top-bar">
+      <button class="btn-change-lib" onclick="location.href='index.html'">← 返回</button>
+      <div class="lib-info" id="lib-info">未选择词库</div>
+      <div style="display:-webkit-box; display:flex; gap:10px;">
+        <button class="btn-change-lib" onclick="openPickLib()">更改词库</button>
+      </div>
+    </div>
+
+    <div id="content">
+      <!-- 练习页 -->
+      <div class="content-page active" id="page-practice">
+        <div class="practice-card">
+          <div id="practice-placeholder" class="empty-state">
+            <p style="margin-bottom:20px;">请先选择词库</p>
+            <button class="practice-btn primary" onclick="openPickMode()">开始练习</button>
+          </div>
+          <div id="practice-area" style="display:none; -webkit-box-flex:1; flex:1; display:-webkit-box; display:-webkit-flex; display:flex; -webkit-box-orient:vertical; -webkit-flex-direction:column; flex-direction:column;">
+            <div class="practice-header">
+              <div class="practice-progress">
+                <span id="practice-progress-text">0 / 0</span>
+                <span class="practice-mode-tag" id="practice-mode-tag">顺序</span>
+              </div>
+              <div class="practice-timer ok" id="practice-timer">不限时</div>
+            </div>
+            <div class="practice-meaning" id="practice-meaning">苹果</div>
+            <div class="practice-phonetic" id="practice-phonetic">/ˈæp.əl/</div>
+            <div id="practice-input-wrap">
+              <div id="practice-hint-input" class="practice-input-row"></div>
+              <input id="practice-full-input" class="practice-full-input" type="text" placeholder="输入完整单词" autocomplete="off" spellcheck="false" style="display:none;" />
+            </div>
+            <div class="practice-hint-switch">
+              <span>提示模式</span>
+              <button class="toggle-switch" id="hint-switch" onclick="toggleHintMode()">
+                <span class="knob"></span>
+              </button>
+            </div>
+            <div class="practice-buttons">
+              <button class="practice-btn disabled" id="btn-submit" onclick="submitAnswer()">提交</button>
+              <button class="practice-btn" onclick="skipWord()">跳过</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 词库列表 -->
+      <div class="content-page" id="page-wordlist">
+        <div class="wordlist-header" id="wordlist-header">全部单词</div>
+        <div id="wordlist-body"></div>
+      </div>
+
+      <!-- 错题库 -->
+      <div class="content-page" id="page-wronglist">
+        <div class="wordlist-header">错题库 <span id="wrong-count" style="font-size:18px; color:#666;"></span></div>
+        <div id="wronglist-body"></div>
+      </div>
+
+      <!-- 训练结果 -->
+      <div class="content-page" id="page-result">
+        <div class="result-title">训练完成！</div>
+        <div class="result-stats">
+          <div class="result-row"><span class="label">总单词数</span><span class="val" id="res-total">0</span></div>
+          <div class="result-row"><span class="label">正确</span><span class="val" id="res-correct" style="color:#090;">0</span></div>
+          <div class="result-row"><span class="label">错误</span><span class="val" id="res-wrong" style="color:#E33;">0</span></div>
+          <div class="result-row"><span class="label">正确率</span><span class="val" id="res-rate">0%</span></div>
+          <div class="result-row"><span class="label">用时</span><span class="val" id="res-time">0秒</span></div>
+          <div class="result-row"><span class="label">模式</span><span class="val" id="res-mode">顺序</span></div>
+        </div>
+        <div class="result-buttons">
+          <button class="result-btn" onclick="switchPage('practice')">返回练习</button>
+          <button class="result-btn primary" onclick="openPickMode()">再来一轮</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="bottom-nav">
+      <button class="nav-item active" onclick="switchPage('practice')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+        <span class="nav-label">练习</span>
+      </button>
+      <button class="nav-item" onclick="switchPage('wordlist')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span class="nav-label">词库</span>
+      </button>
+      <button class="nav-item" onclick="switchPage('wronglist')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span class="nav-label">错题</span>
+      </button>
+      <button class="nav-item" onclick="openSettings()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span class="nav-label">设置</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 词库选择弹窗 -->
+  <div class="overlay" id="pick-lib-overlay">
+    <div class="overlay-panel">
+      <button class="overlay-close" onclick="closePickLib()">×</button>
+      <div class="overlay-title">选择单词库</div>
+      <div class="lib-picker-cols">
+        <div class="lib-picker-col">
+          <div class="lib-picker-col-title">阶段</div>
+          <div id="lib-col-stage"></div>
+        </div>
+        <div class="lib-picker-col">
+          <div class="lib-picker-col-title">年级</div>
+          <div id="lib-col-grade"></div>
+        </div>
+        <div class="lib-picker-col">
+          <div class="lib-picker-col-title">课本版本</div>
+          <div id="lib-col-version"></div>
+        </div>
+        <div class="lib-picker-col">
+          <div class="lib-picker-col-title">学期</div>
+          <div id="lib-col-semester"></div>
+        </div>
+      </div>
+      <div class="lib-picker-confirm">
+        <button id="lib-confirm-btn" onclick="confirmLib()" disabled>确定选择</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模式选择弹窗 -->
+  <div class="overlay" id="pick-mode-overlay">
+    <div class="overlay-panel">
+      <button class="overlay-close" onclick="closePickMode()">×</button>
+      <div class="overlay-title">练习模式</div>
+      <div class="overlay-body">
+        <div class="mode-list">
+          <button class="mode-item" onclick="startPractice('seq')">
+            <div class="mode-item-title">顺序练习</div>
+            <div class="mode-item-desc">从单词库第一个单词开始依次练习</div>
+          </button>
+          <button class="mode-item" onclick="startPractice('rand')">
+            <div class="mode-item-title">随机练习</div>
+            <div class="mode-item-desc">从单词库中随机抽取练习，打乱记忆顺序</div>
+          </button>
+          <button class="mode-item" id="mode-wrong-btn" onclick="startPractice('wrong')">
+            <div class="mode-item-title">错题库练习</div>
+            <div class="mode-item-desc">只练习之前做错过、未完全掌握的单词</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 设置弹窗 -->
+  <div class="overlay" id="settings-overlay">
+    <div class="overlay-panel">
+      <button class="overlay-close" onclick="closeSettings()">×</button>
+      <div class="overlay-title">设置</div>
+      <div class="overlay-body">
+        <div class="settings-row">
+          <span>限时模式</span>
+          <button class="toggle-switch" id="cfg-timed-switch" onclick="toggleCfg('timed')"><span class="knob"></span></button>
+        </div>
+        <div class="settings-row" id="cfg-timed-row">
+          <span>每题限时（秒）</span>
+          <input class="settings-input" id="cfg-time-sec" type="number" min="10" max="600" value="60" onchange="saveCfg('timeSec')" />
+        </div>
+        <div class="settings-row">
+          <span>每轮单词量</span>
+          <input class="settings-input" id="cfg-word-count" type="number" min="1" max="200" value="10" onchange="saveCfg('wordCount')" />
+        </div>
+        <div class="settings-row" style="border-top:2px solid #000; margin-top:20px;">
+          <span>清空错题库</span>
+          <button class="practice-btn" onclick="clearWrongList()" style="font-size:16px; padding:6px 16px; border-color:#E33; color:#E33;">清空</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-mask">加载中...</div>
+
+  <script>
+  (function() {
+    // ── State ──
+    var CFG = loadCFG();
+    var CURRENT_LIB = null;       // {stage, grade, version, semester, words:[...]}
+    var WRONG_LIST = loadWrong(); // {word: {wrong:N, right:N, active:bool}}
+    var libIndex = null;
+    var session = null;           // 当前训练会话
+
+    // ── Utils ──
+    function $(id) { return document.getElementById(id); }
+    function show(id) { $(id).style.display = ''; }
+    function hide(id) { $(id).style.display = 'none'; }
+    function hasClass(el, cls) { return (el.className + ' ').indexOf(cls + ' ') >= 0; }
+    function addClass(el, cls) { if (!hasClass(el, cls)) el.className = el.className + ' ' + cls; }
+    function rmClass(el, cls) { el.className = el.className.replace(new RegExp('\\b' + cls + '\\b', 'g'), '').replace(/\s+/g,' ').replace(/^ | $/g,''); }
+    function toBool(v) { return v === '1' || v === 1 || v === true; }
+
+    function proto() { return (location.protocol === 'https:') ? 'https:' : 'http:'; }
+    function ajax(url, cb) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.timeout = 8000;
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          try { cb(null, JSON.parse(xhr.responseText)); }
+          catch(e) { cb(e); }
+        } else if (xhr.readyState === 4) { cb(new Error('load fail')); }
+      };
+      xhr.ontimeout = function() { cb(new Error('timeout')); };
+      xhr.onerror = function() { cb(new Error('network error')); };
+      xhr.send();
+    }
+
+    // ── Persist ──
+    function loadCFG() {
+      try {
+        return {
+          timed: toBool(localStorage.getItem('wn_timed')),
+          timeSec: parseInt(localStorage.getItem('wn_timeSec')) || 60,
+          wordCount: parseInt(localStorage.getItem('wn_wordCount')) || 10,
+          hint: toBool(localStorage.getItem('wn_hint'))
+        };
+      } catch(e) { return { timed:false, timeSec:60, wordCount:10, hint:false }; }
+    }
+    function saveCFGItem(k, v) {
+      try { localStorage.setItem('wn_' + k, '' + v); } catch(e) {}
+    }
+    function loadWrong() {
+      try { return JSON.parse(localStorage.getItem('wn_wrong') || '{}'); }
+      catch(e) { return {}; }
+    }
+    function saveWrong() {
+      try { localStorage.setItem('wn_wrong', JSON.stringify(WRONG_LIST)); } catch(e) {}
+    }
+    function saveLibPick(pick) {
+      try { localStorage.setItem('wn_libpick', JSON.stringify(pick)); } catch(e) {}
+    }
+    function loadLibPick() {
+      try { return JSON.parse(localStorage.getItem('wn_libpick') || 'null'); }
+      catch(e) { return null; }
+    }
+
+    // ── Init ──
+    function init() {
+      bindSettingsFromCFG();
+      ajax('data/words/index.json', function(err, data) {
+        if (err) { $('lib-info').innerHTML = '<span style="color:#E33;">词库索引加载失败，请检查 data/words/index.json</span>'; return; }
+        libIndex = data;
+        var saved = loadLibPick();
+        if (saved) {
+          // 尝试重新加载上次的词库
+          loadLibFile(saved, function(ok) {
+            if (!ok) { showPickLib(); }
+            else { updateTopBar(); switchPage('practice'); }
+          });
+        } else {
+          showPickLib();
+        }
+      });
+      updateWrongCount();
+    }
+
+    // ── Page Switch ──
+    function switchPage(name) {
+      var pages = ['practice', 'wordlist', 'wronglist', 'result'];
+      for (var i = 0; i < pages.length; i++) {
+        var p = $('page-' + pages[i]);
+        if (!p) continue;
+        if (pages[i] === name) addClass(p, 'active'); else rmClass(p, 'active');
+      }
+      var tabs = document.querySelectorAll('.nav-item');
+      var map = ['practice', 'wordlist', 'wronglist', 'settings'];
+      for (var j = 0; j < tabs.length; j++) {
+        if (name === 'result') { rmClass(tabs[j], 'active'); continue; }
+        if (map[j] === name) addClass(tabs[j], 'active'); else rmClass(tabs[j], 'active');
+      }
+      if (name === 'wordlist') renderWordlist();
+      if (name === 'wronglist') renderWronglist();
+      if (name === 'practice' && session && !session.finished) renderPractice();
+      else if (name === 'practice' && (!session || session.finished)) showPracticePlaceholder();
+    }
+
+    // ── Top Bar ──
+    function updateTopBar() {
+      if (!CURRENT_LIB) { $('lib-info').innerHTML = '未选择词库'; return; }
+      $('lib-info').innerHTML = CURRENT_LIB.stage.name + ' · ' + CURRENT_LIB.grade.name + CURRENT_LIB.semester.name + ' · ' + CURRENT_LIB.version.name;
+      var pick = {
+        stage: CURRENT_LIB.stage.key,
+        grade: CURRENT_LIB.grade.key,
+        version: CURRENT_LIB.version.key,
+        semester: CURRENT_LIB.semester.key
+      };
+      saveLibPick(pick);
+    }
+
+    // ── Lib Loading ──
+    function resolveLibPath(pick) {
+      var pureVersion = pick.version.replace(pick.grade + '-', '');
+      return 'data/words/' + pick.stage + '/' + pick.grade + '-' + pureVersion + '-' + pick.semester + '.json';
+    }
+    function loadLibFile(pick, cb) {
+      $('loading-mask').classList ? $('loading-mask').classList.add('show') : addClass($('loading-mask'), 'show');
+      ajax(resolveLibPath(pick), function(err, data) {
+        $('loading-mask').classList ? $('loading-mask').classList.remove('show') : rmClass($('loading-mask'), 'show');
+        if (err) { cb(false); return; }
+        // 查找显示名
+        var stageObj, gradeObj, versionObj, semesterObj;
+        for (var i = 0; i < libIndex.stages.length; i++) {
+          if (libIndex.stages[i].key === pick.stage) { stageObj = libIndex.stages[i]; break; }
+        }
+        for (var j = 0; stageObj && j < stageObj.grades.length; j++) {
+          if (stageObj.grades[j].key === pick.grade) { gradeObj = stageObj.grades[j]; break; }
+        }
+        if (gradeObj) {
+          for (var k = 0; k < gradeObj.files.length; k++) {
+            if (gradeObj.files[k].key === pick.grade + '-' + pick.version) { versionObj = gradeObj.files[k]; break; }
+          }
+        }
+        for (var s = 0; s < libIndex.semesters.length; s++) {
+          if (libIndex.semesters[s].key === pick.semester) { semesterObj = libIndex.semesters[s]; break; }
+        }
+        CURRENT_LIB = {
+          stage: stageObj || { key: pick.stage, name: pick.stage },
+          grade: gradeObj || { key: pick.grade, name: pick.grade },
+          version: versionObj || { key: pick.version, name: pick.version },
+          semester: semesterObj || { key: pick.semester, name: pick.semester },
+          pick: pick,
+          words: data.words || data
+        };
+        updateTopBar();
+        cb(true);
+      });
+    }
+
+    // ── Lib Picker ──
+    var pickState = { stage: null, grade: null, version: null, semester: null };
+
+    function showPickLib() { openPickLib(); }
+    function openPickLib() {
+      if (!libIndex) return;
+      resetPickState();
+      renderLibPick();
+      $('pick-lib-overlay').classList ? $('pick-lib-overlay').classList.add('show') : addClass($('pick-lib-overlay'), 'show');
+    }
+    function closePickLib() {
+      $('pick-lib-overlay').classList ? $('pick-lib-overlay').classList.remove('show') : rmClass($('pick-lib-overlay'), 'show');
+      // 如果是首次未选过词库且关闭了弹窗，也要让用户看到 placeholder
+    }
+    function resetPickState() {
+      pickState = { stage: null, grade: null, version: null, semester: null };
+    }
+
+    function renderLibPick() {
+      // Stage col
+      var h = '';
+      for (var i = 0; i < libIndex.stages.length; i++) {
+        var s = libIndex.stages[i];
+        h += '<div class="lib-picker-item' + (pickState.stage === s.key ? ' active' : '') + '" onclick="pickSelect(\'stage\',\'' + s.key + '\')">' + s.name + '</div>';
+      }
+      $('lib-col-stage').innerHTML = h;
+
+      // Grade col
+      h = '';
+      if (pickState.stage) {
+        var stageObj = findStage(pickState.stage);
+        for (var j = 0; j < stageObj.grades.length; j++) {
+          var g = stageObj.grades[j];
+          h += '<div class="lib-picker-item' + (pickState.grade === g.key ? ' active' : '') + '" onclick="pickSelect(\'grade\',\'' + g.key + '\')">' + g.name + '</div>';
+        }
+      }
+      $('lib-col-grade').innerHTML = h;
+
+      // Version col
+      h = '';
+      if (pickState.stage && pickState.grade) {
+        var gObj = findGrade(pickState.stage, pickState.grade);
+        for (var k = 0; k < gObj.files.length; k++) {
+          var f = gObj.files[k];
+          h += '<div class="lib-picker-item' + (pickState.version === f.key ? ' active' : '') + '" onclick="pickSelect(\'version\',\'' + f.key + '\')">' + f.name + '</div>';
+        }
+      }
+      $('lib-col-version').innerHTML = h;
+
+      // Semester col
+      h = '';
+      if (pickState.version) {
+        var verParts = pickState.version.split('-');
+        var gradeKey = verParts[0];
+        // 版本项里有 semesters 列表，直接用它
+        var semList = null;
+        var stg = findStage(pickState.stage);
+        if (stg) {
+          var gr = findGrade(pickState.stage, gradeKey);
+          if (gr) {
+            for (var vi = 0; vi < gr.files.length; vi++) {
+              if (gr.files[vi].key === pickState.version) { semList = gr.files[vi].semesters; break; }
+            }
+          }
+        }
+        if (semList) {
+          for (var si = 0; si < semList.length; si++) {
+            var sk = semList[si];
+            var sn = sk === 's' ? '上' : '下';
+            h += '<div class="lib-picker-item' + (pickState.semester === sk ? ' active' : '') + '" onclick="pickSelect(\'semester\',\'' + sk + '\')">' + sn + '</div>';
+          }
+        } else {
+          // fallback
+          for (var mi = 0; mi < libIndex.semesters.length; mi++) {
+            h += '<div class="lib-picker-item' + (pickState.semester === libIndex.semesters[mi].key ? ' active' : '') + '" onclick="pickSelect(\'semester\',\'' + libIndex.semesters[mi].key + '\')">' + libIndex.semesters[mi].name + '</div>';
+          }
+        }
+      }
+      $('lib-col-semester').innerHTML = h;
+
+      // Confirm button
+      var canConfirm = pickState.stage && pickState.grade && pickState.version && pickState.semester;
+      $('lib-confirm-btn').disabled = !canConfirm;
+    }
+
+    function findStage(k) {
+      for (var i = 0; i < libIndex.stages.length; i++) if (libIndex.stages[i].key === k) return libIndex.stages[i];
+      return null;
+    }
+    function findGrade(stageK, gradeK) {
+      var s = findStage(stageK); if (!s) return null;
+      for (var i = 0; i < s.grades.length; i++) if (s.grades[i].key === gradeK) return s.grades[i];
+      return null;
+    }
+
+    window.pickSelect = function(col, val) {
+      pickState[col] = val;
+      // 重置后续列
+      if (col === 'stage') { pickState.grade = null; pickState.version = null; pickState.semester = null; }
+      if (col === 'grade') { pickState.version = null; pickState.semester = null; }
+      if (col === 'version') { pickState.semester = null; }
+      renderLibPick();
+    };
+
+    window.confirmLib = function() {
+      var verKeyParts = pickState.version.split('-');
+      // version 里的 key 格式是 "g4-rujiao"，实际文件名里 version 部分也是 "rujiao"
+      // 但我们存的是 "g4-rujiao"，需要拆出来版本号
+      var pick = {
+        stage: pickState.stage,
+        grade: pickState.grade,
+        version: pickState.version,  // 包含 grade 前缀，resolveLibPath 会正确处理
+        semester: pickState.semester
+      };
+      loadLibFile(pick, function(ok) {
+        if (ok) { closePickLib(); switchPage('practice'); showPracticePlaceholder(); }
+        else { alert('该词库文件尚未入库，请联系管理员添加 ' + resolveLibPath(pick)); }
+      });
+    };
+    window.closePickLib = closePickLib;
+    window.openPickLib = openPickLib;
+
+    // ── Mode Picker ──
+    function openPickMode() {
+      if (!CURRENT_LIB) { alert('请先选择词库！'); openPickLib(); return; }
+      // 检查错题库是否为空
+      var wrongActive = getActiveWrongWords();
+      var wBtn = $('mode-wrong-btn');
+      if (wrongActive.length === 0) {
+        wBtn.className = 'mode-item disabled';
+      } else {
+        wBtn.className = 'mode-item';
+      }
+      $('pick-mode-overlay').classList ? $('pick-mode-overlay').classList.add('show') : addClass($('pick-mode-overlay'), 'show');
+    }
+    function closePickMode() {
+      $('pick-mode-overlay').classList ? $('pick-mode-overlay').classList.remove('show') : rmClass($('pick-mode-overlay'), 'show');
+    }
+    function getActiveWrongWords() {
+      var arr = [];
+      for (var w in WRONG_LIST) {
+        if (WRONG_LIST.hasOwnProperty(w) && WRONG_LIST[w].active) arr.push(w);
+      }
+      return arr;
+    }
+
+    // ── Start Practice ──
+    window.startPractice = function(mode) {
+      closePickMode();
+      if (!CURRENT_LIB) return;
+      var pool, modeName;
+      if (mode === 'wrong') {
+        var aw = getActiveWrongWords();
+        if (aw.length === 0) { alert('错题库为空！'); return; }
+        pool = aw.map(function(w) {
+          // 从 CURRENT_LIB.words 里找
+          for (var i = 0; i < CURRENT_LIB.words.length; i++) {
+            if (CURRENT_LIB.words[i].word === w) return CURRENT_LIB.words[i];
+          }
+          return null;
+        }).filter(Boolean);
+        // 如果错题不在当前词库中，也从 WRONG_LIST 里构建
+        if (pool.length === 0) {
+          alert('错题库中的单词不在当前词库，请先切换词库或做一些练习。'); return;
+        }
+        modeName = '错题库';
+      } else {
+        pool = CURRENT_LIB.words.slice();
+        if (mode === 'rand') shuffle(pool);
+        modeName = mode === 'rand' ? '随机' : '顺序';
+      }
+      var count = Math.min(pool.length, CFG.wordCount);
+      var queue = pool.slice(0, count);
+
+      session = {
+        mode: mode, modeName: modeName,
+        queue: queue,
+        idx: 0,
+        correct: 0, wrong: 0,
+        startedAt: Date.now(),
+        finished: false,
+        timed: CFG.timed,
+        timeSec: CFG.timeSec,
+        timerId: null, timerLeft: 0,
+        lastWordCorrect: null // 标记当前单词结果
+      };
+      $('practice-mode-tag').innerHTML = modeName;
+      showPracticeArea();
+      renderPractice();
+    };
+
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+    }
+
+    // ── Practice UI ──
+    function showPracticePlaceholder() {
+      $('practice-area').style.display = 'none';
+      $('practice-placeholder').style.display = '';
+    }
+    function showPracticeArea() {
+      $('practice-placeholder').style.display = 'none';
+      $('practice-area').style.display = '';
+    }
+    function renderPractice() {
+      if (!session || session.finished || session.idx >= session.queue.length) {
+        finishSession(); return;
+      }
+      showPracticeArea();
+      var w = session.queue[session.idx];
+      $('practice-progress-text').innerHTML = (session.idx + 1) + ' / ' + session.queue.length;
+      $('practice-meaning').innerHTML = w.meaning;
+      $('practice-phonetic').innerHTML = w.phonetic || '';
+
+      // Timer
+      stopTimer();
+      if (session.timed) {
+        session.timerLeft = session.timeSec;
+        $('practice-timer').innerHTML = session.timerLeft + '秒';
+        var ok = $('practice-timer'); rmClass(ok, 'ok');
+        session.timerId = setInterval(function() {
+          session.timerLeft--;
+          $('practice-timer').innerHTML = session.timerLeft + '秒';
+          if (session.timerLeft <= 10) rmClass(ok, 'ok'); else addClass(ok, 'ok');
+          if (session.timerLeft <= 0) {
+            stopTimer();
+            onTimeout();
+          }
+        }, 1000);
+      } else {
+        $('practice-timer').innerHTML = '不限时';
+      }
+
+      // 输入区域
+      if (CFG.hint) {
+        renderHintInput(w);
+      } else {
+        renderFullInput(w);
+      }
+      $('btn-submit').className = 'practice-btn primary';
+      $('btn-submit').style.display = '';
+      $('btn-submit').disabled = false;
+
+      // hint switch state
+      var hs = $('hint-switch');
+      if (CFG.hint) addClass(hs, 'on'); else rmClass(hs, 'on');
+    }
+
+    function renderHintInput(w) {
+      var box = $('practice-hint-input');
+      box.innerHTML = '';
+      box.style.display = '';
+      $('practice-full-input').style.display = 'none';
+      var word = w.word.toLowerCase();
+      // 前2 + 最后1 + 中间空白
+      var len = word.length;
+      if (len <= 3) {
+        // 太短，全是输入
+        for (var i = 0; i < len; i++) {
+          box.appendChild(makeInputBox(''));
+        }
+      } else {
+        // 前2 + 中间(len-3)个空 + 最后1
+        for (var a = 0; a < 2; a++) box.appendChild(makeGivenBox(word[a]));
+        for (var b = 0; b < len - 3; b++) box.appendChild(makeInputBox(''));
+        box.appendChild(makeGivenBox(word[len - 1]));
+      }
+      // 自动聚焦第一个输入框
+      setTimeout(function() {
+        var firstInput = box.querySelector('input');
+        if (firstInput) firstInput.focus();
+      }, 50);
+    }
+    function renderFullInput(w) {
+      $('practice-hint-input').innerHTML = '';
+      $('practice-hint-input').style.display = 'none';
+      var inp = $('practice-full-input');
+      inp.style.display = '';
+      inp.value = '';
+      inp.focus();
+    }
+    function makeGivenBox(ch) {
+      var el = document.createElement('div');
+      el.className = 'letter-box given';
+      el.innerHTML = ch;
+      return el;
+    }
+    function makeInputBox(val) {
+      var wrap = document.createElement('div');
+      wrap.className = 'letter-box';
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.maxLength = 1;
+      inp.value = val || '';
+      inp.oninput = function() {
+        this.value = this.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        if (this.value) {
+          var nxt = wrap.nextElementSibling;
+          if (nxt) {
+            var nxtInp = nxt.querySelector('input');
+            if (nxtInp) nxtInp.focus();
+          }
+        }
+        updateSubmitEnabled();
+      };
+      inp.onkeydown = function(e) {
+        if (e.keyCode === 8 && !this.value) {
+          var prev = wrap.previousElementSibling;
+          if (prev) {
+            var pInp = prev.querySelector('input');
+            if (pInp) pInp.focus();
+          }
+        }
+        if (e.keyCode === 13) { submitAnswer(); }
+      };
+      wrap.appendChild(inp);
+      return wrap;
+    }
+    function updateSubmitEnabled() {
+      var btn = $('btn-submit');
+      if (CFG.hint) {
+        var allInp = $('practice-hint-input').querySelectorAll('.letter-box input');
+        for (var i = 0; i < allInp.length; i++) {
+          if (!allInp[i].value) { btn.className = 'practice-btn primary disabled'; return; }
+        }
+        btn.className = 'practice-btn primary';
+      } else {
+        var v = $('practice-full-input').value.trim();
+        if (v.length > 0) btn.className = 'practice-btn primary';
+        else btn.className = 'practice-btn primary disabled';
+      }
+    }
+
+    window.toggleHintMode = function() {
+      CFG.hint = !CFG.hint;
+      saveCFGItem('hint', CFG.hint ? '1' : '0');
+      if (session && !session.finished) renderPractice();
+    };
+
+    function stopTimer() {
+      if (session && session.timerId) { clearInterval(session.timerId); session.timerId = null; }
+    }
+
+    window.submitAnswer = function() {
+      if (!session || session.finished) return;
+      var w = session.queue[session.idx];
+      var word = w.word.toLowerCase();
+      var ans;
+      if (CFG.hint) {
+        var box = $('practice-hint-input');
+        var all = box.querySelectorAll('.letter-box');
+        ans = '';
+        for (var i = 0; i < all.length; i++) {
+          var inp = all[i].querySelector('input');
+          ans += inp ? (inp.value || '') : (all[i].innerHTML || '');
+        }
+        ans = ans.toLowerCase();
+      } else {
+        ans = $('practice-full-input').value.trim().toLowerCase();
+      }
+      var correct = (ans === word);
+      markWordResult(w, correct);
+      showResultFeedback(correct, word);
+      setTimeout(function() {
+        session.idx++;
+        if (session.idx >= session.queue.length) finishSession();
+        else renderPractice();
+      }, 600);
+    };
+
+    window.skipWord = function() {
+      if (!session || session.finished) return;
+      var w = session.queue[session.idx];
+      markWordResult(w, false);
+      session.wrong++;
+      session.idx++;
+      if (session.idx >= session.queue.length) finishSession();
+      else renderPractice();
+    };
+
+    function onTimeout() {
+      var w = session.queue[session.idx];
+      markWordResult(w, false);
+      session.wrong++;
+      session.idx++;
+      if (session.idx >= session.queue.length) finishSession();
+      else renderPractice();
+    }
+
+    function markWordResult(w, correct) {
+      var key = w.word;
+      if (!WRONG_LIST[key]) WRONG_LIST[key] = { wrong: 0, right: 0, active: false };
+      var rec = WRONG_LIST[key];
+      if (correct) {
+        session.correct++;
+        rec.right++;
+        if (rec.right >= 3) rec.active = false;
+      } else {
+        session.wrong++;
+        rec.wrong++;
+        rec.active = true;
+      }
+      saveWrong();
+      updateWrongCount();
+    }
+
+    function showResultFeedback(correct, word) {
+      var el = CFG.hint ? $('practice-hint-input') : $('practice-full-input');
+      if (CFG.hint) {
+        var boxes = el.querySelectorAll('.letter-box');
+        var target = correct ? correct : 'wrong';
+        for (var i = 0; i < boxes.length; i++) {
+          if (hasClass(boxes[i], 'given')) continue;
+          // 所有输入框标上颜色
+          if (correct) addClass(boxes[i], 'correct');
+          else addClass(boxes[i], 'wrong');
+        }
+        // 显示正确答案
+        if (!correct) {
+          setTimeout(function() { alert('正确答案：' + word); }, 10);
+        }
+      } else {
+        var inp = $('practice-full-input');
+        if (correct) inp.style.borderColor = '#090';
+        else { inp.style.borderColor = '#E33'; setTimeout(function() { alert('正确答案：' + word); }, 10); }
+        setTimeout(function() { inp.style.borderColor = ''; }, 500);
+      }
+      $('btn-submit').className = 'practice-btn primary disabled';
+    }
+
+    function finishSession() {
+      stopTimer();
+      session.finished = true;
+      var dur = Math.floor((Date.now() - session.startedAt) / 1000);
+      var rate = session.queue.length > 0 ? Math.round(session.correct / session.queue.length * 100) : 0;
+      $('res-total').innerHTML = session.queue.length;
+      $('res-correct').innerHTML = session.correct;
+      $('res-wrong').innerHTML = session.wrong;
+      $('res-rate').innerHTML = rate + '%';
+      $('res-time').innerHTML = formatDur(dur);
+      $('res-mode').innerHTML = session.modeName;
+      switchPage('result');
+      session = null;
+    }
+    function formatDur(s) {
+      if (s < 60) return s + '秒';
+      var m = Math.floor(s / 60), rs = s % 60;
+      return m + '分' + (rs > 0 ? rs + '秒' : '');
+    }
+
+    // ── Wordlist ──
+    function renderWordlist() {
+      var body = $('wordlist-body');
+      if (!CURRENT_LIB) {
+        body.innerHTML = '<div class="wordlist-empty">请先选择词库</div>';
+        return;
+      }
+      $('wordlist-header').innerHTML = '全部单词 (' + CURRENT_LIB.words.length + ')';
+      var html = '';
+      for (var i = 0; i < CURRENT_LIB.words.length; i++) {
+        var w = CURRENT_LIB.words[i];
+        html += '<div class="wordlist-item"><div><span class="w-word">' + w.word + '</span> <span style="color:#888;">' + (w.phonetic || '') + '</span></div><span class="w-mean">' + w.meaning + '</span></div>';
+      }
+      body.innerHTML = html || '<div class="wordlist-empty">词库为空</div>';
+    }
+
+    // ── Wronglist ──
+    function renderWronglist() {
+      var body = $('wronglist-body');
+      var keys = [];
+      for (var k in WRONG_LIST) if (WRONG_LIST.hasOwnProperty(k)) keys.push(k);
+      if (keys.length === 0) {
+        $('wrong-count').innerHTML = '';
+        body.innerHTML = '<div class="wordlist-empty">太棒了！还没有错题 ✨</div>';
+        return;
+      }
+      keys.sort(function(a, b) { return WRONG_LIST[b].wrong - WRONG_LIST[a].wrong; });
+      $('wrong-count').innerHTML = '（共 ' + keys.length + ' 个）';
+      var html = '';
+      for (var i = 0; i < keys.length; i++) {
+        var w = keys[i], rec = WRONG_LIST[w];
+        var meaning = '';
+        if (CURRENT_LIB) {
+          for (var j = 0; j < CURRENT_LIB.words.length; j++) {
+            if (CURRENT_LIB.words[j].word === w) { meaning = CURRENT_LIB.words[j].meaning; break; }
+          }
+        }
+        var active = rec.active;
+        var badgeCls = active ? 'w-badge' : 'w-badge muted';
+        var badgeTxt = active ? ('错 ' + rec.wrong + ' / 对 ' + rec.right) : ('已掌握 · 错' + rec.wrong);
+        html += '<div class="wordlist-item"><div><span class="w-word">' + w + '</span>' + (meaning ? ' <span style="color:#888;">' + meaning + '</span>' : '') + '</div><span class="' + badgeCls + '">' + badgeTxt + '</span></div>';
+      }
+      body.innerHTML = html;
+    }
+    function updateWrongCount() {
+      var n = 0;
+      for (var k in WRONG_LIST) if (WRONG_LIST.hasOwnProperty(k)) n++;
+      var el = $('wrong-count'); if (el) el.innerHTML = n > 0 ? '（' + n + '）' : '';
+    }
+
+    // ── Settings ──
+    function bindSettingsFromCFG() {
+      // timed switch
+      if (CFG.timed) addClass($('cfg-timed-switch'), 'on'); else rmClass($('cfg-timed-switch'), 'on');
+      $('cfg-time-sec').value = CFG.timeSec;
+      $('cfg-word-count').value = CFG.wordCount;
+    }
+    function openSettings() {
+      bindSettingsFromCFG();
+      $('settings-overlay').classList ? $('settings-overlay').classList.add('show') : addClass($('settings-overlay'), 'show');
+    }
+    function closeSettings() {
+      $('settings-overlay').classList ? $('settings-overlay').classList.remove('show') : rmClass($('settings-overlay'), 'show');
+    }
+    window.openSettings = openSettings;
+    window.closeSettings = closeSettings;
+    window.toggleCfg = function(key) {
+      if (key === 'timed') {
+        CFG.timed = !CFG.timed;
+        saveCFGItem('timed', CFG.timed ? '1' : '0');
+        if (CFG.timed) addClass($('cfg-timed-switch'), 'on'); else rmClass($('cfg-timed-switch'), 'on');
+      }
+    };
+    window.saveCfg = function(key) {
+      if (key === 'timeSec') {
+        CFG.timeSec = parseInt($('cfg-time-sec').value) || 60;
+        saveCFGItem('timeSec', CFG.timeSec);
+      }
+      if (key === 'wordCount') {
+        CFG.wordCount = parseInt($('cfg-word-count').value) || 10;
+        saveCFGItem('wordCount', CFG.wordCount);
+      }
+    };
+    window.clearWrongList = function() {
+      if (confirm('确定清空错题库？')) { WRONG_LIST = {}; saveWrong(); renderWronglist(); updateWrongCount(); alert('已清空'); }
+    };
+
+    // ── Public aliases ──
+    window.switchPage = switchPage;
+    window.openPickMode = openPickMode;
+    window.closePickMode = closePickMode;
+
+    // Init
+    init();
+  })();
+  </script>
+</body>
+</html>

@@ -8,7 +8,10 @@
 先退出浏览器，回到 Kindle 的主页。点击屏幕右上角的搜索图标（放大镜）。在弹出的搜索框里输入 ~ds，然后按回车确认。
 检验效果：这时屏幕不会有明显变化，但你可以试着按一下电源键，如果无法锁屏，就说明生效了。这个状态会一直持续到你下次重启 Kindle 为止。
 
-**把吃灰的 Kindle 变成你的桌面搭子。**
+使KINDLE长亮方法2：
+kindle接电脑，在kindle文件夹，即根目录，新建txt文件，然后改名为TESTD_PREVENT_SCREENSAVER
+
+****把吃灰的 Kindle 变成你的桌面搭子。**
 
 一个纯 HTML 单文件 Web App，专为 Kindle Paperwhite 的 E-ink 屏幕设计，让闲置的 Kindle 在桌面上重新发光。
 

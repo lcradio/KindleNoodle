@@ -1,0 +1,73 @@
+{
+  "stages": [
+    {
+      "key": "primary",
+      "name": "小学",
+      "grades": [
+        { "key": "g3", "name": "三年级", "files": [
+          { "key": "g3-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g3-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g3-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g4", "name": "四年级", "files": [
+          { "key": "g4-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g4-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g4-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g5", "name": "五年级", "files": [
+          { "key": "g5-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g5-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g5-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g6", "name": "六年级", "files": [
+          { "key": "g6-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g6-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g6-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]}
+      ]
+    },
+    {
+      "key": "junior",
+      "name": "初中",
+      "grades": [
+        { "key": "g7", "name": "七年级", "files": [
+          { "key": "g7-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g7-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g7-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g8", "name": "八年级", "files": [
+          { "key": "g8-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g8-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g8-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g9", "name": "九年级", "files": [
+          { "key": "g9-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g9-hujiao", "name": "沪教版", "semesters": ["s", "x"] },
+          { "key": "g9-外研社", "name": "外研社版", "semesters": ["s", "x"] }
+        ]}
+      ]
+    },
+    {
+      "key": "senior",
+      "name": "高中",
+      "grades": [
+        { "key": "g1", "name": "高一", "files": [
+          { "key": "g1-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g1-shanghai", "name": "上海版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g2", "name": "高二", "files": [
+          { "key": "g2-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g2-shanghai", "name": "上海版", "semesters": ["s", "x"] }
+        ]},
+        { "key": "g3", "name": "高三", "files": [
+          { "key": "g3-rujiao", "name": "人教版", "semesters": ["s", "x"] },
+          { "key": "g3-shanghai", "name": "上海版", "semesters": ["s", "x"] }
+        ]}
+      ]
+    }
+  ],
+  "semesters": [
+    { "key": "s", "name": "上" },
+    { "key": "x", "name": "下" }
+  ]
+}
