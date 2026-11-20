@@ -4,6 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function(){
+      var ua = navigator.userAgent || '';
+      var isKindle = /Kindle|Silk|kftt|SDIO|Jasmine/i.test(ua);
+      if (isKindle) {
+        var m = document.querySelector('meta[name="viewport"]');
+        if (m) m.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=no');
+        try { document.documentElement.className += ' is-kindle'; } catch(e) {}
+      }
+      window.IS_KINDLE = isKindle;
+    })();
+  </script>
   <title>Kindle Noodle · 单词</title>
   <style>
     *, *::before, *::after {
@@ -965,6 +977,25 @@
       inp.value = '';
       inp.focus();
     }
+    function focusNextLetter(wrap) {
+      var nxt = wrap.nextElementSibling;
+      if (!nxt) return;
+      var nxtInp = nxt.querySelector ? nxt.querySelector('input') : null;
+      if (!nxtInp) return;
+      try {
+        nxtInp.focus();
+      } catch(e) {}
+      setTimeout(function() { try { nxtInp.focus(); } catch(e) {} }, 0);
+      setTimeout(function() { try { nxtInp.focus(); } catch(e) {} }, 30);
+    }
+    function focusPrevLetter(wrap) {
+      var prev = wrap.previousElementSibling;
+      if (!prev) return;
+      var pInp = prev.querySelector ? prev.querySelector('input') : null;
+      if (!pInp) return;
+      try { pInp.focus(); } catch(e) {}
+      setTimeout(function() { try { pInp.focus(); } catch(e) {} }, 0);
+    }
     function makeGivenBox(ch) {
       var el = document.createElement('div');
       el.className = 'letter-box given';
@@ -975,26 +1006,22 @@
       var wrap = document.createElement('div');
       wrap.className = 'letter-box';
       var inp = document.createElement('input');
-      inp.type = 'text'; inp.maxLength = 1;
+      inp.type = 'text'; inp.maxLength = 1; inp.autocomplete = 'off'; inp.spellcheck = false;
       inp.value = val || '';
-      inp.oninput = function() {
-        this.value = this.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
-        if (this.value) {
-          var nxt = wrap.nextElementSibling;
-          if (nxt) {
-            var nxtInp = nxt.querySelector('input');
-            if (nxtInp) nxtInp.focus();
-          }
-        }
+      function onCharInput() {
+        inp.value = inp.value.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        if (inp.value) focusNextLetter(wrap);
         updateSubmitEnabled();
+      }
+      inp.oninput = onCharInput;
+      inp.onkeypress = onCharInput;
+      inp.onkeyup = onCharInput;
+      inp.onpaste = function(e) {
+        setTimeout(onCharInput, 0);
       };
       inp.onkeydown = function(e) {
-        if (e.keyCode === 8 && !this.value) {
-          var prev = wrap.previousElementSibling;
-          if (prev) {
-            var pInp = prev.querySelector('input');
-            if (pInp) pInp.focus();
-          }
+        if (e.keyCode === 8 && !inp.value) {
+          focusPrevLetter(wrap);
         }
         if (e.keyCode === 13) { submitAnswer(); }
       };
