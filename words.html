@@ -10,8 +10,18 @@
       var isKindle = /Kindle|Silk|kftt|SDIO|Jasmine/i.test(ua);
       if (isKindle) {
         var m = document.querySelector('meta[name="viewport"]');
-        if (m) m.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=no');
+        if (m) m.setAttribute('content', 'width=758, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no');
         try { document.documentElement.className += ' is-kindle'; } catch(e) {}
+        try {
+          document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, true);
+          document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, true);
+          document.addEventListener('gestureend', function(e){ e.preventDefault(); }, true);
+          document.addEventListener('dblclick', function(e){
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.className.indexOf('letter-box') !== -1)) {
+              e.preventDefault();
+            }
+          }, true);
+        } catch(e) {}
       }
       window.IS_KINDLE = isKindle;
     })();
@@ -25,12 +35,24 @@
     }
     html { height: 100%; overflow: hidden; }
     body {
-      /* width: 758px; */
-      height: 100%; background: #fff;
+      width: 758px; height: 100%; background: #fff;
       font-family: Arial, Helvetica, sans-serif; color: #000;
       overflow: hidden;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+    }
+    html.is-kindle body,
+    html.is-kindle {
+      -webkit-text-size-adjust: none !important;
+      text-size-adjust: none !important;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    html.is-kindle input {
+      -webkit-user-select: text;
+      user-select: text;
+      font-size: 16px !important;
     }
 
     /* ── Page Wrapper ── */
