@@ -13,7 +13,8 @@
     }
     html { height: 100%; overflow: hidden; }
     body {
-      width: 758px; height: 100%; background: #fff;
+      /* width: 758px; */
+      height: 100%; background: #fff;
       font-family: Arial, Helvetica, sans-serif; color: #000;
       overflow: hidden;
       display: -webkit-box; display: -webkit-flex; display: flex;
@@ -28,64 +29,76 @@
       min-height: 0; overflow: hidden;
     }
 
-    /* ── Top Bar ── */
+    /* ── Top Bar（与 index.html #bottom-nav 高度统一）── */
     #top-bar {
-      height: 60px; padding: 0 16px;
-      border-bottom: 1px solid #DDD;
       display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+      height: 90px; -webkit-flex-shrink: 0; flex-shrink: 0;
+      /* margin: 0 8px 8px; */
+      margin-bottom: 8px;
+      padding: 16px 32px 18px;
+      background: #d9d9d9;
     }
-    #top-bar .lib-info {
-      font-size: 22px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    #top-bar .lib-info.small { font-size: 18px; }
+    #top-bar .lib-info { font-size: 2rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #top-bar .lib-info.small { font-size: 20px; }
     #top-bar .btn-change-lib {
-      font-size: 16px; padding: 6px 14px;
-      border: 1px solid #000; background: #fff; border-radius: 8px;
-      cursor: pointer; font-family: inherit;
+      font-size: 2rem; padding: 10px 28px; border-radius: 38px;
+      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
+      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
+      background: #fff; cursor: pointer; font-family: inherit; color: #000;
     }
 
     /* ── Content ── */
     #content {
       -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
-      min-height: 0; overflow-y: auto; overflow-x: hidden;
-      padding: 12px;
+      min-height: 0; overflow: hidden;
+      padding: 0 8px 8px;
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
     }
-    .content-page { display: none; height: 100%; }
-    .content-page.active { display: -webkit-box; display: -webkit-flex; display: flex;
-      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column; }
+    .content-page { display: none; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-height: 0; overflow: hidden; }
+    .content-page.active {
+      display: -webkit-box; display: -webkit-flex; display: flex;
+      -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+    }
 
-    /* ── Bottom Nav ── */
+    /* ── Bottom Nav（与 index.html #bottom-nav 风格统一）── */
     #bottom-nav {
-      height: 72px; border-top: 1px solid #DDD; background: #fff;
+      height: 90px; -webkit-flex-shrink: 0; flex-shrink: 0;
+      margin: 0 8px 8px;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
     }
     .nav-item {
-      -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
+      -webkit-box-flex: 1; -webkit-flex: 1 0 0; flex: 1 0 0;
+      background: #fff; border-radius: 60px;
+      border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD;
+      border-right: 1px solid #DDDDDD; border-bottom: 3px solid #DDDDDD;
+      height: 90px; position: relative; overflow: hidden;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      cursor: pointer; border-right: 1px solid #EEE;
-      font-family: inherit; background: #fff; color: #666;
+      cursor: pointer; font-family: inherit; color: #666;
     }
-    .nav-item:last-child { border-right: none; }
-    .nav-item .nav-label { font-size: 14px; margin-top: 4px; }
-    .nav-item.active { color: #000; background: #F5F5F5; }
+    .nav-item + .nav-item { margin-left: 12px; }
+    .nav-item .nav-label { font-size: 2rem; margin-top: 4px; }
+    .nav-item.active { color: #fff; background: #000; }
     .nav-item .dot {
-      position: absolute; width: 10px; height: 10px; border-radius: 50%;
-      background: #E33; top: 10px; right: calc(50% - 10px);
+      position: absolute; width: 12px; height: 12px; border-radius: 50%;
+      background: #E33; top: 12px; right: calc(50% - 28px);
     }
 
     /* ── Practice Page ── */
     .practice-card {
+      background: #fff; border-radius: 60px;
+      border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD;
+      border-right: 1px solid #DDDDDD; border-bottom: 3px solid #DDDDDD;
+      padding: 31px 31px;
       -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
-      background: #fff; border-radius: 30px;
-      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
-      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
-      padding: 30px; overflow: hidden;
+      min-height: 0; overflow: hidden;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
     }
@@ -93,59 +106,62 @@
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
-    .practice-progress { font-size: 16px; color: #666; }
-    .practice-timer { font-size: 18px; color: #E33; font-weight: bold; }
+    .practice-progress { font-size: 22px; color: #666; font-weight: 500; }
+    .practice-timer { font-size: 22px; color: #E33; font-weight: bold; }
     .practice-timer.ok { color: #090; }
     .practice-mode-tag {
-      font-size: 14px; padding: 2px 10px; border-radius: 10px;
-      border: 1px solid #000; display: inline-block; margin-left: 8px;
+      font-size: 18px; padding: 4px 14px; border-radius: 38px;
+      border: 1px solid #000; display: inline-block; margin-left: 12px;
     }
     .practice-meaning {
-      font-size: 44px; text-align: center; margin: 30px 0 20px;
+      font-size: 52px; text-align: center; margin: 30px 0 16px;
       font-weight: bold;
     }
     .practice-phonetic {
-      font-size: 22px; text-align: center; color: #888; margin-bottom: 30px;
+      font-size: 24px; text-align: center; color: #ababab; margin-bottom: 30px;
     }
     .practice-input-row {
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      flex-wrap: wrap; gap: 8px; margin-bottom: 30px;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
     }
     .letter-box {
-      width: 52px; height: 64px; border: 2px solid #000; border-radius: 8px;
+      width: 60px; height: 72px; border: 2px solid #000; border-radius: 14px;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      font-size: 36px; font-weight: bold; background: #fff; text-align: center;
+      font-size: 42px; font-weight: bold; background: #fff; text-align: center;
       font-family: inherit;
     }
-    .letter-box.given { background: #EEE; color: #666; }
+    .letter-box.given { background: #EDEDED; color: #666; }
     .letter-box input {
       width: 100%; height: 100%; border: none; outline: none; background: transparent;
-      font-size: 36px; font-weight: bold; text-align: center; font-family: inherit;
+      font-size: 42px; font-weight: bold; text-align: center; font-family: inherit;
       text-transform: lowercase;
     }
     .letter-box.correct { background: #C8F7C8; border-color: #090; }
     .letter-box.wrong { background: #FCC; border-color: #E33; }
     .practice-full-input {
-      width: 100%; max-width: 600px; margin: 0 auto 30px;
+      width: 100%;  margin: 0 auto 20px;
       font-size: 40px; text-align: center; padding: 16px;
-      border: 2px solid #000; border-radius: 12px; font-family: inherit;
+      border: 2px solid #000; border-radius: 14px; font-family: inherit;
       text-transform: lowercase; letter-spacing: 4px;
     }
     .practice-buttons {
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
       gap: 16px;
+      margin-top: 10px;
     }
     .practice-btn {
-      font-size: 24px; padding: 14px 40px; border-radius: 12px;
-      border: 2px solid #000; background: #fff; cursor: pointer; font-family: inherit;
+      font-size: 2rem; padding: 16px 44px; border-radius: 38px;
+      border-top: 1px solid #000; border-left: 1px solid #000;
+      border-right: 1px solid #000; border-bottom: 3px solid #000;
+      background: #fff; cursor: pointer; font-family: inherit;
     }
     .practice-btn.primary { background: #000; color: #fff; }
     .practice-btn.disabled { opacity: 0.4; cursor: not-allowed; }
@@ -153,12 +169,12 @@
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
-      gap: 12px; margin-top: 10px; font-size: 18px;
+      gap: 14px; margin-top: 10px; font-size: 22px; color: #666;
     }
 
     /* ── Wordlist / Wronglist ── */
     .wordlist-header {
-      font-size: 24px; font-weight: bold; padding: 8px 4px 16px;
+      font-size: 30px; font-weight: bold; padding: 4px 0 20px;
       border-bottom: 2px solid #000; margin-bottom: 12px;
     }
     .wordlist-item {
@@ -166,27 +182,27 @@
       -webkit-box-orient: horizontal; -webkit-flex-direction: row; flex-direction: row;
       -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
-      padding: 14px 8px; border-bottom: 1px solid #EEE;
+      padding: 16px 4px; border-bottom: 1px solid #EEE;
     }
-    .wordlist-item .w-word { font-size: 24px; font-weight: bold; }
-    .wordlist-item .w-mean { font-size: 18px; color: #666; }
-    .wordlist-item .w-badge { font-size: 14px; padding: 2px 10px; border-radius: 10px;
-      border: 1px solid #E33; color: #E33; margin-left: 8px; display: inline-block; }
+    .wordlist-item .w-word { font-size: 26px; font-weight: bold; }
+    .wordlist-item .w-mean { font-size: 22px; color: #666; }
+    .wordlist-item .w-badge { font-size: 16px; padding: 4px 12px; border-radius: 38px;
+      border: 1px solid #E33; color: #E33; margin-left: 10px; display: inline-block; }
     .wordlist-item .w-badge.muted { border-color: #AAA; color: #AAA; }
-    .wordlist-empty { text-align: center; color: #999; padding: 60px 0; font-size: 20px; }
+    .wordlist-empty { text-align: center; color: #999; padding: 80px 0; font-size: 26px; }
 
     /* ── Result Page ── */
-    .result-title { font-size: 30px; font-weight: bold; text-align: center; margin: 30px 0; }
+    .result-title { font-size: 36px; font-weight: bold; text-align: center; margin: 24px 0; }
     .result-stats {
-      background: #fff; border-radius: 20px;
-      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
-      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
-      padding: 30px; margin-bottom: 20px;
+      background: #fff; border-radius: 60px;
+      border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD;
+      border-right: 1px solid #DDDDDD; border-bottom: 3px solid #DDDDDD;
+      padding: 32px; margin-bottom: 20px;
     }
     .result-row {
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
-      padding: 14px 0; font-size: 20px;
+      padding: 14px 0; font-size: 26px;
     }
     .result-row + .result-row { border-top: 1px solid #EEE; }
     .result-row .label { color: #666; }
@@ -197,30 +213,32 @@
       gap: 16px; margin-top: 20px;
     }
     .result-btn {
-      font-size: 20px; padding: 12px 30px; border-radius: 10px;
-      border: 2px solid #000; background: #fff; cursor: pointer; font-family: inherit;
+      font-size: 24px; padding: 14px 40px; border-radius: 38px;
+      border-top: 1px solid #000; border-left: 1px solid #000;
+      border-right: 1px solid #000; border-bottom: 3px solid #000;
+      background: #fff; cursor: pointer; font-family: inherit;
     }
     .result-btn.primary { background: #000; color: #fff; }
 
     /* ── Overlays ── */
     .overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.97); z-index: 10000;
+      background: #fff; z-index: 10000;
       display: none;
     }
     .overlay.show { display: block; }
     .overlay-panel {
-      width: 100%; height: 100%; padding: 20px;
+      width: 100%; height: 100%; padding: 24px;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
     }
     .overlay-title {
-      font-size: 28px; font-weight: bold; padding: 10px 0 20px;
+      font-size: 34px; font-weight: bold; padding: 4px 0 24px;
       border-bottom: 2px solid #000; margin-bottom: 20px;
     }
     .overlay-close {
-      position: absolute; top: 16px; right: 20px;
-      font-size: 28px; border: none; background: none; cursor: pointer;
+      position: absolute; top: 20px; right: 24px;
+      font-size: 32px; border: none; background: none; cursor: pointer; font-family: inherit;
     }
     .overlay-body {
       -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; overflow-y: auto;
@@ -234,26 +252,30 @@
     }
     .lib-picker-col {
       -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
-      border: 1px solid #DDD; border-radius: 10px; padding: 8px; overflow-y: auto;
+      background: #fff; border-radius: 38px;
+      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
+      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
+      padding: 12px; overflow-y: auto;
     }
     .lib-picker-col-title {
-      font-size: 16px; color: #888; padding: 8px 4px; border-bottom: 1px solid #EEE;
+      font-size: 20px; color: #ababab; padding: 10px 8px; border-bottom: 1px solid #EEE;
     }
     .lib-picker-item {
-      padding: 14px 10px; cursor: pointer; font-size: 20px;
-      border-radius: 6px; border-bottom: 1px solid #F0F0F0;
+      padding: 18px 12px; cursor: pointer; font-size: 24px;
+      border-radius: 14px; border-bottom: 1px solid #F0F0F0;
     }
-    .lib-picker-item:hover { background: #F5F5F5; }
     .lib-picker-item.active { background: #000; color: #fff; }
     .lib-picker-item.disabled { color: #CCC; cursor: not-allowed; }
     .lib-picker-confirm {
-      padding: 16px; border-top: 2px solid #000; margin-top: 16px;
+      padding: 20px 0 0; margin-top: 16px;
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
     }
     .lib-picker-confirm button {
-      font-size: 22px; padding: 12px 60px; border-radius: 12px;
-      border: 2px solid #000; background: #000; color: #fff; cursor: pointer; font-family: inherit;
+      font-size: 24px; padding: 14px 80px; border-radius: 38px;
+      border-top: 1px solid #000; border-left: 1px solid #000;
+      border-right: 1px solid #000; border-bottom: 3px solid #000;
+      background: #000; color: #fff; cursor: pointer; font-family: inherit;
     }
     .lib-picker-confirm button:disabled { opacity: 0.3; }
 
@@ -261,15 +283,17 @@
     .mode-list {
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
     .mode-item {
-      padding: 22px 20px; border: 2px solid #DDD; border-radius: 14px;
-      cursor: pointer; font-family: inherit; background: #fff; text-align: left;
+      padding: 26px 24px; background: #fff; border-radius: 38px;
+      border-top: 1px solid #DDD; border-left: 1px solid #DDD;
+      border-right: 1px solid #DDD; border-bottom: 3px solid #DDD;
+      cursor: pointer; font-family: inherit; text-align: left;
+      font-size: 2rem;
     }
-    .mode-item:hover { border-color: #000; }
-    .mode-item-title { font-size: 22px; font-weight: bold; margin-bottom: 4px; }
-    .mode-item-desc { font-size: 16px; color: #666; }
+    .mode-item-title {  font-weight: bold; margin-bottom: 6px; }
+    .mode-item-desc { font-size: 1.8rem; color: #666; }
     .mode-item.disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* 设置 */
@@ -277,22 +301,22 @@
       display: -webkit-box; display: -webkit-flex; display: flex;
       -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
-      padding: 18px 4px; border-bottom: 1px solid #EEE; font-size: 20px;
+      padding: 20px 4px; border-bottom: 1px solid #EEE; font-size: 24px;
     }
     .toggle-switch {
-      width: 60px; height: 34px; border-radius: 17px;
+      width: 72px; height: 40px; border-radius: 20px;
       background: #DDD; position: relative; cursor: pointer;
       border: none; padding: 0;
     }
     .toggle-switch .knob {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: #fff; position: absolute; top: 2px; left: 2px;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #fff; position: absolute; top: 3px; left: 3px;
     }
     .toggle-switch.on { background: #000; }
-    .toggle-switch.on .knob { left: 28px; }
+    .toggle-switch.on .knob { left: 35px; }
     .settings-input {
-      font-size: 20px; padding: 8px 12px; border: 1px solid #000; border-radius: 6px;
-      width: 100px; text-align: center; font-family: inherit;
+      font-size: 24px; padding: 10px 14px; border: 2px solid #000; border-radius: 10px;
+      width: 120px; text-align: center; font-family: inherit;
     }
 
     /* 加载遮罩 */
@@ -302,22 +326,15 @@
       display: none;
       -webkit-box-align: center; -webkit-align-items: center; align-items: center;
       -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
-      font-size: 22px; color: #666;
+      font-size: 26px; color: #666;
     }
     #loading-mask.show { display: -webkit-box; display: -webkit-flex; display: flex; }
 
     /* 空状态 */
     .empty-state {
       text-align: center; color: #999; padding: 80px 20px;
-      font-size: 22px;
+      font-size: 2.2rem;
     }
-
-    /* 返回首页链接 */
-    .back-home {
-      position: absolute; top: 12px; left: 12px; z-index: 50;
-      font-size: 16px; color: #666; text-decoration: none;
-    }
-    .back-home:hover { color: #000; }
   </style>
 </head>
 <body>
