@@ -419,7 +419,7 @@
       <!-- 词库列表 -->
       <div class="content-page" id="page-wordlist">
         <div class="wordlist-header" id="wordlist-header">全部单词</div>
-        <div id="wordlist-body"></div>
+        <div id="wordlist-body" style="overflow: scroll;"></div>
       </div>
 
       <!-- 错题库 -->
@@ -441,7 +441,7 @@
         </div>
         <div class="result-buttons">
           <button class="result-btn" onclick="switchPage('practice')">返回练习</button>
-          <button class="result-btn primary" onclick="openPickMode()">再来一轮</button>
+          <button class="result-btn primary" onclick="startNextRound()">再来一轮</button>
         </div>
       </div>
     </div>
@@ -849,7 +849,7 @@
     }
 
     // ── Start Practice ──
-    window.startPractice = function(mode) {
+    window.startPractice = function(mode, startIdx, count) {
       closePickMode();
       if (!CURRENT_LIB) return;
       var pool, modeName;
@@ -857,24 +857,34 @@
         var aw = getActiveWrongWords();
         if (aw.length === 0) { alert('错题库为空！'); return; }
         pool = aw.map(function(w) {
-          // 从 CURRENT_LIB.words 里找
           for (var i = 0; i < CURRENT_LIB.words.length; i++) {
             if (CURRENT_LIB.words[i].word === w) return CURRENT_LIB.words[i];
           }
           return null;
         }).filter(Boolean);
-        // 如果错题不在当前词库中，也从 WRONG_LIST 里构建
         if (pool.length === 0) {
           alert('错题库中的单词不在当前词库，请先切换词库或做一些练习。'); return;
         }
         modeName = '错题库';
+        startIdx = 0;
       } else {
-        pool = CURRENT_LIB.words.slice();
-        if (mode === 'rand') shuffle(pool);
+        if (startIdx && startIdx > 0 && window.__practicePool && window.__practicePoolMode === mode) {
+          pool = window.__practicePool;
+        } else {
+          pool = CURRENT_LIB.words.slice();
+          if (mode === 'rand') shuffle(pool);
+          window.__practicePool = pool;
+          window.__practicePoolMode = mode;
+        }
         modeName = mode === 'rand' ? '随机' : '顺序';
       }
-      var count = Math.min(pool.length, CFG.wordCount);
-      var queue = pool.slice(0, count);
+      startIdx = startIdx || 0;
+      count = count || CFG.wordCount;
+      var maxStart = Math.max(0, pool.length - 1);
+      if (startIdx > maxStart) startIdx = 0;
+      var actualCount = Math.min(count, pool.length - startIdx);
+      if (actualCount <= 0) { alert('已练习完整个词库！'); return; }
+      var queue = pool.slice(startIdx, startIdx + actualCount);
 
       session = {
         mode: mode, modeName: modeName,
@@ -886,8 +896,11 @@
         timed: CFG.timed,
         timeSec: CFG.timeSec,
         timerId: null, timerLeft: 0,
-        lastWordCorrect: null // 标记当前单词结果
+        lastWordCorrect: null,
+        startIdx: startIdx,
+        poolSize: pool.length
       };
+      window.__lastMode = mode;
       $('practice-mode-tag').innerHTML = modeName;
       showPracticeArea();
       renderPractice();
@@ -1139,9 +1152,30 @@
       $('res-rate').innerHTML = rate + '%';
       $('res-time').innerHTML = formatDur(dur);
       $('res-mode').innerHTML = session.modeName;
+      window.__lastMode = session.mode;
+      window.__lastNextStart = session.startIdx + session.queue.length;
       switchPage('result');
       session = null;
     }
+    window.startNextRound = function(startIdx, mode, count) {
+      var m = mode || window.__lastMode || 'seq';
+      var s;
+      if (typeof startIdx === 'number') {
+        s = startIdx;
+      } else if (window.__lastNextStart !== undefined) {
+        s = window.__lastNextStart;
+      } else {
+        s = 0;
+      }
+      var c = count || CFG.wordCount;
+      if (m === 'wrong' && getActiveWrongWords().length === 0) {
+        alert('当前错题库已空，无法继续错题模式！');
+        switchPage('practice');
+        return;
+      }
+      switchPage('practice');
+      startPractice(m, s, c);
+    };
     function formatDur(s) {
       if (s < 60) return s + '秒';
       var m = Math.floor(s / 60), rs = s % 60;
